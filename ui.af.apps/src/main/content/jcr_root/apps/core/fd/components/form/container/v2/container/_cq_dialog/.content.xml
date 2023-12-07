@@ -302,6 +302,40 @@
                             </columns>
                         </items>
                     </submitActions>
+                    <remarket
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Remarket"
+                            sling:resourceType="granite/ui/components/coral/foundation/container">
+                        <items jcr:primaryType="nt:unstructured">
+                            <container
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <emailField
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldDescription="Field to be used for email marketing"
+                                            fieldLabel="Email field"
+                                            name="./email"/>
+                                    <smsField
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldDescription="Field to be used for sms marketing"
+                                            fieldLabel="Sms field"
+                                            name="./phone"/>
+                                    <whatsappField
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                            fieldDescription="Field to be used for whatsapp marketing"
+                                            fieldLabel="Whatsapp field"
+                                            name="./whatsapp"/>
+                                </items>
+                            </container>
+                        </items>
+                        <parentConfig
+                                jcr:primaryType="nt:unstructured"
+                                active="{Boolean}true"/>
+                    </remarket>
                     <advanced
                             jcr:primaryType="nt:unstructured"
                             sling:resourceType="granite/ui/components/coral/foundation/include"
