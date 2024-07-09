@@ -185,26 +185,27 @@ class Utils {
         });
     }
 
-    static setupAutoSave(formContainer, formJson) {
-        if (formJson.enableAutoSave) {
-            const saveEndPoint = '/adobe/forms/af/save/' + formJson.id;
+    /**
+     * Register time based auto save
+     * @param {module:FormView~FormContainer} formContainer - The form container.
+     * @param autoSaveProperties
+     */
+    static setupAutoSave(formContainer, autoSaveProperties) {
+        const enableAutoSave = autoSaveProperties['fd:enableAutoSave'];
+        if (enableAutoSave) {
+            const autoSaveStrategyType = autoSaveProperties['fd:autoSaveStrategyType'];
+            const autoSaveInterval = autoSaveProperties['fd:autoSaveInterval'];
             const formModel = formContainer.getModel();
-            if (formJson.autoSaveStrategyType === 'time' && formJson.autoSaveInternal) {
+            const saveEndPoint = Utils.getContextPath() + '/adobe/forms/af/save/' + formModel.id;
+            if (autoSaveStrategyType === 'time' && autoSaveInterval) {
                 if (Utils.#autoSaveIntervalId === -1) {
                     console.log("Registering time based auto save");
                     Utils.#autoSaveIntervalId = setInterval(() => {
                         formModel.dispatch(new Save({
                             'action': saveEndPoint
                         }));
-                    }, parseInt(formJson.autoSaveInternal) * 1000);
+                    }, parseInt(autoSaveInterval) * 1000);
                 }
-            } else if (formJson.autoSaveStrategyType === 'event' && formJson.autoSaveEvent) {
-                console.log("Registering event based auto save");
-                formContainer.getModel().subscribe(() => {
-                    formModel.dispatch(new Save({
-                        'action': saveEndPoint
-                    }));
-                }, formJson.autoSaveEvent);
             }
         }
     }
@@ -358,7 +359,10 @@ class Utils {
                     _element: elements[i]
                 });
                 Utils.initializeAllFields(formContainer);
-                Utils.setupAutoSave(formContainer, _formJson);
+                const autoSaveProperties = _formJson.properties?.['fd:autoSave'];
+                if (window.Granite && !window.Granite.author && autoSaveProperties) {
+                    Utils.setupAutoSave(formContainer, autoSaveProperties);
+                }
                 const event = new CustomEvent(Constants.FORM_CONTAINER_INITIALISED, { "detail": formContainer });
                 document.dispatchEvent(event);
             }

@@ -16,4 +16,8 @@
 (function($, channel, Coral) {
     "use strict";
 
+    $(document).on('change', '[name="./enableAutoSave"]', function () {
+        console.log('auto save is clicked');
+    });
+
 })(jQuery, jQuery(document), Coral);

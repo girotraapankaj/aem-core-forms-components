@@ -78,6 +78,12 @@ public class FormContainerImpl extends AbstractContainerImpl implements FormCont
 
     public static final String FD_AUTO_SAVE_PROPERTY_WRAPPER = "fd:autoSave";
 
+    public static final String FD_ENABLE_AUTO_SAVE = "fd:enableAutoSave";
+
+    public static final String FD_AUTO_SAVE_STRATEGY_TYPE = "fd:autoSaveStrategyType";
+
+    public static final String FD_AUTO_SAVE_INTERVAL = "fd:autoSaveInterval";
+
     @SlingObject(injectionStrategy = InjectionStrategy.OPTIONAL)
     @Nullable
     private SlingHttpServletRequest request;
@@ -334,11 +340,16 @@ public class FormContainerImpl extends AbstractContainerImpl implements FormCont
     }
 
     @JsonIgnore
+    @Override
     public Map<String, Object> getAutoSaveProperties() {
         Map<String, Object> autoSaveProperties = new LinkedHashMap<>();
-        autoSaveProperties.put("enableAutoSave", true);
-        autoSaveProperties.put("autoSaveStrategyType", true);
-        autoSaveProperties.put("autoSaveInterval", true);
+        autoSaveProperties.put(FD_ENABLE_AUTO_SAVE, isEnableAutoSave());
+        if (StringUtils.isNotBlank(getAutoSaveStrategyType())) {
+            autoSaveProperties.put(FD_AUTO_SAVE_STRATEGY_TYPE, getAutoSaveStrategyType());
+        }
+        if (StringUtils.isNotBlank(getAutoSaveInterval())) {
+            autoSaveProperties.put(FD_AUTO_SAVE_INTERVAL, getAutoSaveInterval());
+        }
         return autoSaveProperties;
     }
 
@@ -393,21 +404,25 @@ public class FormContainerImpl extends AbstractContainerImpl implements FormCont
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnableAutoSave() {
         return enableAutoSave;
     }
 
     @Override
+    @JsonIgnore
     public String getAutoSaveStrategyType() {
         return autoSaveStrategyType;
     }
 
     @Override
+    @JsonIgnore
     public String getAutoSaveInterval() {
         return autoSaveInterval;
     }
 
     @Override
+    @JsonIgnore
     public String getAutoSaveEvent() {
         return autoSaveEvent;
     }

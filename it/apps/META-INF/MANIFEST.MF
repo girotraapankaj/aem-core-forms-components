@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Content-Package-Id: my_packages:policy
+Content-Package-Roots: /conf/sacombank/settings/wcm/templates/blank-af-v
+ 2/policies
+Content-Package-Type: content
+
