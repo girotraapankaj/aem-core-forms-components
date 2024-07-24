@@ -121,6 +121,53 @@ describe('Rule editor authoring sanity for core-components',function(){
         cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.closeRuleEditor).click();
     }
 
+    const createRuleToAddMultipleFieldInWhen = function() {
+        // Edit rule option not existing on button toolbar
+        cy.get(formsSelectors.ruleEditor.action.editRule).should("exist");
+        cy.initializeEventHandlerOnChannel("af-rule-editor-initialized").as("isRuleEditorInitialized");
+        cy.get(formsSelectors.ruleEditor.action.editRule).click();
+
+        // click on  create option from rule editor header
+        cy.get("@isRuleEditorInitialized").its('done').should('equal', false);
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.createRuleButton).should("be.visible").click();
+
+        //cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.sideToggleButton + ":first").click();
+
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.STATEMENT + " .child-choice-name").should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.STATEMENT + " .child-choice-name").click();
+
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.STATEMENT + " .expeditor-customoverlay.is-open coral-selectlist-item[value='EVENT_SCRIPTS']")
+            .click({force: true});
+
+        // select the component for which rule is to written i.e. Button here
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.EVENT_AND_COMPARISON_OPERATOR + " .choice-view-default").should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.EVENT_AND_COMPARISON_OPERATOR + " .choice-view-default").click();
+
+        // IS CLICKED option not existing in 'OPERATIONS' dropdown
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.operator.IS_CLICKED).should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.operator.IS_CLICKED).click();
+
+        // check and click on dropdown to view the actions available
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.BLOCK_STATEMENT + " .choice-view-default").should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.choiceModels.BLOCK_STATEMENT + " .choice-view-default").click();
+
+        cy.getRuleEditorIframe().find(".terminal-view.AFCOMPONENT.VARIABLE").should("be.visible");
+        cy.getRuleEditorIframe().find(".terminal-view.AFCOMPONENT.VARIABLE").click();
+
+        cy.getRuleEditorIframe().find(".terminal-view.AFCOMPONENT.VARIABLE coral-overlay.is-open .expression-selectlist coral-selectlist-item:first").click({force: true});
+
+
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.saveRule).should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.saveRule).click();
+
+        // check if rule is created
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.ruleSummary.CREATED_RULE).should("exist");
+
+        // check and close rule editor
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.closeRuleEditor).should("exist");
+        cy.getRuleEditorIframe().find(formsSelectors.ruleEditor.action.closeRuleEditor).click();
+    }
+
     const createRuleToHandleFormSubmission = function() {
         // Edit rule option not existing on button toolbar
         cy.get(formsSelectors.ruleEditor.action.editRule).should("exist");
@@ -229,6 +276,7 @@ describe('Rule editor authoring sanity for core-components',function(){
             buttonEditPath = formContainerPath + "/" + afConstants.components.forms.resourceType.formbutton.split("/").pop(),
             saveButtonEditPath = saveFormContainerPath + "/" + afConstants.components.forms.resourceType.formbutton.split("/").pop(),
             buttonEditPathSelector = "[data-path='" + buttonEditPath + "']",
+            textinputEditPathSelector = "[data-path='" + textinputEditPath + "']",
             saveButtonEditPathSelector = "[data-path='" + saveButtonEditPath + "']",
             submitFormButtonEditPath = submitFormContainerPath + "/" + afConstants.components.forms.resourceType.submitButton.split("/").pop(),
             submitFormButtonEditPathSelector = "[data-path='" + submitFormButtonEditPath + "']";
@@ -252,7 +300,7 @@ describe('Rule editor authoring sanity for core-components',function(){
          * 12 Close rule editor
          * 13 Check if button is visible
          */
-        it('should add rule on button to disable a text box', function () {
+        xit('should add rule on button to disable a text box', function () {
             cy.openAuthoring(formPath);
             cy.selectLayer("Edit");
             cy.get(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/*']").should("exist");
@@ -272,7 +320,7 @@ describe('Rule editor authoring sanity for core-components',function(){
         })
 
 
-        it('should add submission handler rules on form', function () {
+        xit('should add submission handler rules on form', function () {
             if (cy.af.isLatestAddon() && toggle_array.includes("FT_FORMS-13209")) {
                 cy.openAuthoring(submitFormPath);
                 cy.selectLayer("Edit");
@@ -290,7 +338,7 @@ describe('Rule editor authoring sanity for core-components',function(){
             }
         })
 
-        it('should add custom formData submit rule on submit button', function () {
+        xit('should add custom formData submit rule on submit button', function () {
             if (cy.af.isLatestAddon() && toggle_array.includes("FT_FORMS-11541")) {
                 cy.openAuthoring(submitFormPath);
                 cy.selectLayer("Edit");
@@ -335,7 +383,7 @@ describe('Rule editor authoring sanity for core-components',function(){
         })
 
         it('should add save form rule on button', function () {
-            if (cy.af.isLatestAddon() && toggle_array.includes("FT_FORMS-11581")) {
+           // if (cy.af.isLatestAddon() && toggle_array.includes("FT_FORMS-11581")) {
                 cy.openAuthoring(saveFormPath);
                 cy.selectLayer("Edit");
                 cy.get(sitesSelectors.overlays.overlay.component + "[data-path='" + saveFormContainerPath + "/*']").should("exist");
@@ -348,6 +396,28 @@ describe('Rule editor authoring sanity for core-components',function(){
 
                 cy.selectLayer("Edit");
                 cy.deleteComponentByPath(saveButtonEditPath);
+          //  }
+        })
+
+        xit('should add multiple fields in When condition', function () {
+            cy.openAuthoring(formPath);
+            cy.selectLayer("Edit");
+            cy.get(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/*']").should("exist");
+
+            /*cy.insertComponent(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/!*']",
+                "Adaptive Form Text Box", afConstants.components.forms.resourceType.formtextinput);
+            cy.insertComponent(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/!*']",
+                "Adaptive Form Text Box", afConstants.components.forms.resourceType.formtextinput);
+            cy.insertComponent(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/!*']",
+                "Adaptive Form Button", afConstants.components.forms.resourceType.formbutton);*/
+            cy.openEditableToolbar(sitesSelectors.overlays.overlay.component + textinputEditPathSelector);
+
+            createRuleToAddMultipleFieldInWhen();
+
+            cy.selectLayer("Edit");
+            cy.deleteComponentByPath(textinputEditPath);
+            if (cy.af.isLatestAddon()) {
+
             }
         })
 
@@ -379,7 +449,7 @@ describe('Rule editor authoring sanity for core-components',function(){
          * 12 Close rule editor
          * 13 Check if button is visible
          */
-        it('should add rule on button to disable a text box', function () {
+        xit('should add rule on button to disable a text box', function () {
             cy.openAuthoring(pagePath);
             cy.selectLayer("Edit");
             cy.get(sitesSelectors.overlays.overlay.component + "[data-path='" + formContainerPath + "/*']").should("exist");

@@ -17,7 +17,7 @@
 import {Constants} from "./constants.js";
 import HTTPAPILayer from "./HTTPAPILayer.js";
 import {customFunctions} from "./customFunctions.js";
-import {FunctionRuntime} from '@aemforms/af-core'
+import {FunctionRuntime, Save} from '@aemforms/af-core'
 
 /**
  * @module FormView
@@ -46,6 +46,13 @@ class Utils {
      * @type {String[]}
      */
     static #fieldCreatorOrder = [];
+
+    /**
+     * The autoSaveIntervalId - to stop setting setInterval multiple times
+     * @private
+     * @type {number}
+     */
+    static #autoSaveIntervalId = -1;
 
     /**
      * Returns the data attributes of the specific element.
@@ -177,6 +184,31 @@ class Utils {
             Utils.registerMutationObserver(formContainer, fieldCreator, fieldSelector, fieldClass);
         });
     }
+
+    static setupAutoSave(formContainer, formJson) {
+        if (formJson.enableAutoSave) {
+            const saveEndPoint = '/adobe/forms/af/save/' + formJson.id;
+            const formModel = formContainer.getModel();
+            if (formJson.autoSaveStrategyType === 'time' && formJson.autoSaveInternal) {
+                if (Utils.#autoSaveIntervalId === -1) {
+                    console.log("Registering time based auto save");
+                    Utils.#autoSaveIntervalId = setInterval(() => {
+                        formModel.dispatch(new Save({
+                            'action': saveEndPoint
+                        }));
+                    }, parseInt(formJson.autoSaveInternal) * 1000);
+                }
+            } else if (formJson.autoSaveStrategyType === 'event' && formJson.autoSaveEvent) {
+                console.log("Registering event based auto save");
+                formContainer.getModel().subscribe(() => {
+                    formModel.dispatch(new Save({
+                        'action': saveEndPoint
+                    }));
+                }, formJson.autoSaveEvent);
+            }
+        }
+    }
+
     /**
      * Removes field reference from form container.
      * @private
@@ -326,6 +358,7 @@ class Utils {
                     _element: elements[i]
                 });
                 Utils.initializeAllFields(formContainer);
+                Utils.setupAutoSave(formContainer, _formJson);
                 const event = new CustomEvent(Constants.FORM_CONTAINER_INITIALISED, { "detail": formContainer });
                 document.dispatchEvent(event);
             }

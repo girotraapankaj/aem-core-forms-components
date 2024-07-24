@@ -121,6 +121,19 @@ public class FormContainerImpl extends AbstractContainerImpl implements FormCont
     @Default(values = DEFAULT_FORMS_SPEC_VERSION)
     private String specVersion;
 
+    @ValueMapValue(injectionStrategy = InjectionStrategy.OPTIONAL)
+    @Default(booleanValues = false)
+    private boolean enableAutoSave;
+
+    @ValueMapValue(injectionStrategy = InjectionStrategy.OPTIONAL)
+    private String autoSaveStrategyType;
+
+    @ValueMapValue(injectionStrategy = InjectionStrategy.OPTIONAL)
+    private String autoSaveInterval;
+
+    @ValueMapValue(injectionStrategy = InjectionStrategy.OPTIONAL)
+    private String autoSaveEvent;
+
     @PostConstruct
     protected void initFormContainerModel() {
         if (request != null) {
@@ -377,6 +390,26 @@ public class FormContainerImpl extends AbstractContainerImpl implements FormCont
     @Override
     public String getName() {
         return FormContainer.super.getName();
+    }
+
+    @Override
+    public boolean isEnableAutoSave() {
+        return enableAutoSave;
+    }
+
+    @Override
+    public String getAutoSaveStrategyType() {
+        return autoSaveStrategyType;
+    }
+
+    @Override
+    public String getAutoSaveInterval() {
+        return autoSaveInterval;
+    }
+
+    @Override
+    public String getAutoSaveEvent() {
+        return autoSaveEvent;
     }
 
 }

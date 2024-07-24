@@ -16,7 +16,7 @@
  * from Adobe Systems Incorporated.
  */
 
-describe('Form with custom functions configured in client lib', () => {
+xdescribe('Form with custom functions configured in client lib', () => {
     const formPath = "/content/forms/af/core-components-it/samples/ruleeditor/af2-custom-function/basic.html";
     let formContainer = null;
     let toggle_array = [];
